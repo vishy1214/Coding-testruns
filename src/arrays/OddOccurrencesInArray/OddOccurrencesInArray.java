@@ -1,6 +1,8 @@
-package arrays.findoddnumber;
+package arrays.OddOccurrencesInArray;
 
-public class FindNumberThatDontMatch {
+import java.util.*;
+
+public class OddOccurrencesInArray {
     public int solution(int[] A) {
         // write your code in Java SE 8
         /*
@@ -9,43 +11,48 @@ public class FindNumberThatDontMatch {
 
         possible approach:
         1. have two for loops - not efficient. O(N * N) time complexity.
-        2. have a while with left & right index variables which gets incremented in a controlled manner. (Preffered) O(n) time complexity.
+        2. have a while with left & right index variables which gets incremented in a controlled manner.
+            pros:O(n) time complexity.
 
-        finalized approach:
-        1. while loop  with left & right index variable.
-        2. for every increment of left index, the right index starts from length of the array and moves left until its index >= left index.
-        3. loop thru as long as array[leftindex] == array[rightIndex]
-        4. break out as soon as ther's a
+            cons: you still need some data structure to keep a track of the match.
+                  this approach worked but it wasn't fast enough for 500k+ array elements.
+
+
+        3. hashmap<array_value, occurrence_count>
+               1. Make an entry in the hashmap for every element in the array.
+               2. if there's a match increment the occurrence_count(ie. the hashmap value) by 1.
+             => as per the the assumption, hashmap will contain only 1 item with occurrence_count as 1. (mod function comes in handy)
         */
 
-        int leftIdx = 0;
-        int rightIdx = leftIdx +1;
-        Set<Integer> previousMatches = new HashSet<>();
-        //Set<Integer> noMatchSoFar = new HashSet<>();
-        while(leftIdx < A.length-1 && rightIdx < A.length){
+        int noMatch = -1;
+        HashMap<Integer, Integer> occurence = new HashMap<>();
 
-            System.out.format("previousMatches.contains: %s -- currRightIdx: %d(currLeftIdx: %d)  &&  %d == %d .%n",(previousMatches.toString()),rightIdx,leftIdx,A[leftIdx], A[rightIdx]);
-
-            if(!previousMatches.contains(rightIdx) && A[leftIdx] == A[rightIdx]){
-                System.out.format("added index: %d (value: %d) .%n",rightIdx,A[rightIdx]);
-                previousMatches.add(rightIdx);
-                leftIdx += 1;
-                rightIdx = leftIdx + 1;
-                continue;
+        for(int idx =0 ; idx < A.length; idx++){
+            int idxVal = A[idx];
+            if(occurence.containsKey(idxVal)){
+                occurence.put(idxVal,occurence.get(idxVal)+1);
             }else{
-                // System.out.println(" dont match");
+                occurence.put(idxVal,1);
             }
-
-            if(rightIdx == A.length-1){
-                leftIdx += 1;
-                rightIdx = leftIdx + 1 ; //re-initializing the rightIdx
-            }else{
-                rightIdx++; //default rightIdx keeps moving left.
-            }
-
         }
-        //System.out.println(noMatchSoFar.toString());
-        return 0;
+
+        for(Map.Entry<Integer,Integer> kv : occurence.entrySet()){
+            if(kv.getValue()%2 !=0){
+                noMatch = kv.getKey();
+                break;
+            }
+        }
+        return noMatch;
+    }
+
+    /***  sample TEST cases ***/
+    public static void main(String args[]){
+        OddOccurrencesInArray cyclicRotation = new OddOccurrencesInArray();
+        System.out.println("OddElement in the array: "+cyclicRotation.solution(new int[] {9,3,9,3,9,7,9}));
+        System.out.println("OddElement in the array: "+cyclicRotation.solution(new int[] {9,3,9,3,9,7,9,0,0}));
+        System.out.println("OddElement in the array: "+cyclicRotation.solution(new int[] {9,3,9,3,9,7,7,9,0,0,0}));
+        System.out.println("OddElement in the array: "+cyclicRotation.solution(new int[] {10}));
+        System.out.println("OddElement in the array: "+cyclicRotation.solution(new int[] {9,3,9,3,9,7,7,9,0,0,1,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0,9,3,9,3,9,7,7,9,0,0}));
     }
 
 }
